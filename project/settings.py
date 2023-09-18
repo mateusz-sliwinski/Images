@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'core.apps.CoreConfig',
 ]
 
 MIDDLEWARE = [
@@ -125,6 +126,7 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, project)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
+AUTH_USER_MODEL = 'core.User'
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
