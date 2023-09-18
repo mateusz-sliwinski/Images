@@ -1,0 +1,29 @@
+version: "3"
+
+services:
+  web:
+    build: .
+#    command: python manage.py runserver 0.0.0.0:8000
+    command: gunicorn project.wsgi:application --bind 0.0.0.0:8000 --reload --access-logfile '-' --error-logfile '-'
+    volumes:
+      - .:/code
+      - apps_static_volume:/code/apps_static
+      - media_volume:/code/media
+    expose:
+      - 8000
+    environment:
+      - DJANGO_SETTINGS_MODULE=project.settings
+
+  nginx:
+    build: ./nginx
+    ports:
+      - 8050:80
+    depends_on:
+      - web
+    volumes:
+      - apps_static_volume:/code/apps_static
+      - media_volume:/code/media/
+
+volumes:
+  apps_static_volume:
+  media_volume:
