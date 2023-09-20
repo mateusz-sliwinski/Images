@@ -1,18 +1,26 @@
 # 3rd-party
-from rest_framework.serializers import ModelSerializer
+from rest_framework import serializers
 
 # Project
 from core.models import Images
-from core.models import User
 
 
-class UserSerializer(ModelSerializer):
-    class Meta:
-        model = User
-        field = ['id', 'name', 'tier']
-
-
-class ImageSerializer(ModelSerializer):
+class ImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Images
-        field = '__all__'
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        user = self.context['request'].user
+        is_enterprise = user.tier.name == 'Enterprise'
+
+        if not is_enterprise:
+            self.fields.pop('expired_time')
+            self.fields.pop('thumbnail')
+            self.fields.pop('owner')
+
+        if is_enterprise:
+            self.fields.pop('owner')
+            self.fields.pop('thumbnail')
