@@ -1,7 +1,7 @@
 # Django
 from django.contrib import admin
 
-from core.models import User, Tier
+from core.models import User, Tier, Images, Thumbnail
 
 
 # Register your models here.
@@ -25,7 +25,7 @@ class UserAdmin(admin.ModelAdmin):  # noqa D101
 
 
 @admin.register(Tier)
-class UserAdmin(admin.ModelAdmin):  # noqa D101
+class TierAdmin(admin.ModelAdmin):  # noqa D101
     list_display = [
         'id',
         'thumbnails',
@@ -45,3 +45,13 @@ class UserAdmin(admin.ModelAdmin):  # noqa D101
         'name',
         'thumbnails',
     ]
+
+
+@admin.register(Images)
+class ImagesAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(Thumbnail)
+class ThumbAdmin(admin.ModelAdmin):
+    pass
