@@ -3,8 +3,6 @@ import uuid
 
 # Django
 from django.contrib.auth.models import AbstractUser
-from django.contrib.auth.models import Group
-from django.contrib.auth.models import Permission
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator
 from django.core.validators import MinValueValidator
@@ -130,6 +128,15 @@ class User(AbstractUser):
         return f'{self.username} {self.tier} '
 
 
+class Thumbnail(UUIDMixin, models.Model):
+    thumbnail_200 = models.ImageField(upload_to='thumbnail_200')
+    thumbnail_400 = models.ImageField(upload_to='thumbnail_400', null=True)
+
+    class Meta:
+        verbose_name = 'Thumbnail'
+        verbose_name_plural = 'Thumbnails'
+
+
 class Images(UUIDMixin, models.Model):
     """
     Model representing an image with a UUID-based primary key.
@@ -158,10 +165,11 @@ class Images(UUIDMixin, models.Model):
             This will create a model with a UUID-based primary key and additional fields.
     """
 
-    image = models.ImageField(upload_to='media/')
+    image = models.ImageField(null=True, blank=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    thumbnail = models.ForeignKey(Thumbnail, on_delete=models.CASCADE, null=True)
     expired_time = models.IntegerField(
-        default=300,
+        default=None,
         validators=[
             MaxValueValidator(30000),
             MinValueValidator(300)
@@ -173,9 +181,11 @@ class Images(UUIDMixin, models.Model):
         verbose_name_plural = 'Images'
 
     def save(self, *args, **kwargs):
-        img = Image.open(self.image.path)
-        if not img.format == 'JPG' or img.format == 'PNG':
-            raise ValidationError("Use jpg or png format.")
+        if self.image:
+            img = Image.open(self.image.path)
+            img_format = img.format.lower() if img.format else None
+            if img_format not in ['jpeg', 'jpg', 'png']:
+                raise ValidationError("Use jpg or png format.")
         super().save(*args, **kwargs)
 
     def __str__(self) -> str:
