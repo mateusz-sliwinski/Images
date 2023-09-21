@@ -1,15 +1,21 @@
+# Standard Library
+import random
+import string
 from io import BytesIO
 
-from PIL import ImageOps
+# Django
 from django.core.files.base import ContentFile
+
+# 3rd-party
+from PIL import ImageOps
 from rest_framework import status
 from rest_framework.response import Response
 
+# Project
 from core.models import Thumbnail
 
 
 def validation_photo_views(user, image_data, request):
-
     if user.is_anonymous:
         return Response(
             {"error": "Cannot Add data."},
@@ -68,3 +74,8 @@ def create_img_200(image_name, img, request):
     thumbnail.thumbnail_200.save(image_name, ContentFile(thumbnail_stream.getvalue()), save=True)
     thumbnail_link = request.build_absolute_uri(thumbnail.thumbnail_200.url)
     return thumbnail, thumbnail_link
+
+
+def generate_random_token(length=32):
+    characters = string.ascii_letters + string.digits
+    return ''.join(random.choice(characters) for _ in range(length))
