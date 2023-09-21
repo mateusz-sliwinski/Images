@@ -137,6 +137,18 @@ class Thumbnail(UUIDMixin, models.Model):
         verbose_name_plural = 'Thumbnails'
 
 
+class ExpiredLink(UUIDMixin, models.Model):
+    token = models.CharField(max_length=255, null=True)
+    expiration_time = models.DateTimeField(null=True)
+
+    class Meta:
+        verbose_name = 'Expired Link'
+        verbose_name_plural = 'Expired Links'
+
+    def __str__(self) -> str:
+        return f'{self.expiration_time} '
+
+
 class Images(UUIDMixin, models.Model):
     """
     Model representing an image with a UUID-based primary key.
@@ -168,8 +180,9 @@ class Images(UUIDMixin, models.Model):
     image = models.ImageField(null=True, blank=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
     thumbnail = models.ForeignKey(Thumbnail, on_delete=models.CASCADE, null=True)
+    expired_link = models.ForeignKey(ExpiredLink, on_delete=models.CASCADE, null=True)
     expired_time = models.IntegerField(
-        default=None,
+        null=True,
         validators=[
             MaxValueValidator(30000),
             MinValueValidator(300)
