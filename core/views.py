@@ -30,10 +30,37 @@ from core.utils import validation_photo_views
 
 
 class UploadImageView(APIView):
+    """
+    API view for uploading images and generating thumbnails based on the user's membership tier.
+
+    This view handles the upload of images, generates thumbnails, and associates them with the appropriate Image model
+    based on the user's membership tier ('Basic', 'Premium', 'Enterprise'). It also handles link expiration for the
+    'Enterprise' tier.
+
+    Attributes:
+        parser_classes (tuple): The parser classes used to parse the request data (MultiPartParser, FormParser).
+        serializer_class (ImageSerializer): The serializer class for handling image data.
+
+    Methods:
+        post: Handles the POST request for image upload and thumbnail generation based on the user's membership tier.
+
+    """
     parser_classes = (MultiPartParser, FormParser)
     serializer_class = ImageSerializer
 
     def post(self, request, *args, **kwargs):
+        """
+        Handle the POST request for image upload and thumbnail generation based on the user's membership tier.
+
+        Args:
+            request: The HTTP request object.
+            *args: Additional positional arguments.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            Response: A Response object with the appropriate data based on the user's membership tier.
+
+        """
         user = request.user
         image_data = request.data['image']
         expired_time = request.data.get('expired_time', None)
@@ -115,9 +142,32 @@ class UploadImageView(APIView):
 
 
 class ListImagesView(APIView):
+    """
+    API view for listing images owned by the authenticated user.
+
+    This view retrieves and lists images owned by the authenticated user, providing image details including
+    image URLs, thumbnail URLs, and expiration links for 'Enterprise' tier.
+
+    Attributes:
+        permission_classes (list): The permission classes required for accessing this view (IsAuthenticated).
+
+    Methods:
+        get: Handles the GET request to list images owned by the authenticated user.
+
+    """
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
+        """
+        Handle the GET request to list images owned by the authenticated user.
+
+        Args:
+            request: The HTTP request object.
+
+        Returns:
+            Response: A Response object with the serialized image data and status.
+
+        """
         user = request.user
 
         images = Images.objects.filter(owner=user)
@@ -149,9 +199,33 @@ class ListImagesView(APIView):
 
 
 class TokenView(APIView):
+    """
+    API view for handling token-based access to image files.
+
+    This view allows users to access image files using a valid token. It checks the token's validity,
+    verifies the expiration time, and serves the image file for download.
+
+    Attributes:
+        renderer_classes (list): The renderer classes used for rendering the response (JSONRenderer).
+
+    Methods:
+        get: Handles the GET request to serve the image file associated with a valid token.
+
+    """
     renderer_classes = [JSONRenderer]
 
     def get(self, request, token):
+        """
+        Handle the GET request to serve the image file associated with a valid token.
+
+        Args:
+            request: The HTTP request object.
+            token (str): The token used to access the image file.
+
+        Returns:
+            FileResponse: A response containing the image file for download.
+
+        """
         expired_link = get_object_or_404(ExpiredLink, token=token)
 
         if expired_link.expiration_time < timezone.now():

@@ -5,7 +5,7 @@ from io import BytesIO
 
 # Django
 from django.core.files.base import ContentFile
-
+from rest_framework import request
 # 3rd-party
 from PIL import ImageOps
 from rest_framework import status
@@ -15,7 +15,21 @@ from rest_framework.response import Response
 from core.models import Thumbnail
 
 
-def validation_photo_views(user, image_data, request):
+def validation_photo_views(user, image_data, request: request.Request) -> Response:
+    """
+    Validate the user, image data, and request for photo-related views.
+
+    This function performs validation checks for user authentication, image data, and image format.
+
+    Args:
+        user: The user making the request.
+        image_data: The image data received in the request.
+        request: The HTTP request object.
+
+    Returns:
+        Response: A Response object with an error message and status if validation fails.
+
+    """
     if user.is_anonymous:
         return Response(
             {"error": "Cannot Add data."},
@@ -42,7 +56,22 @@ def validation_photo_views(user, image_data, request):
         )
 
 
-def create_img_200_400(image_name, img, request):
+def create_img_200_400(image_name, img, request) -> tuple[Thumbnail, str, str]:
+    """
+    Create 200x200 and 400x400 thumbnail images from the original image.
+
+    This function creates thumbnail images with dimensions 200x200 and 400x400 pixels from the original image.
+
+    Args:
+        image_name (str): The name of the original image.
+        img: The original image to create thumbnails from.
+        request: The HTTP request object.
+
+    Returns:
+        Tuple[Thumbnail, str, str]: A tuple containing the created Thumbnail object, the link to the 200x200 thumbnail,
+                                   and the link to the 400x400 thumbnail.
+
+    """
     img_200 = img.copy()
     img_400 = img.copy()
 
@@ -65,7 +94,21 @@ def create_img_200_400(image_name, img, request):
     return thumbnail, thumbnail_link_200, thumbnail_link_400
 
 
-def create_img_200(image_name, img, request):
+def create_img_200(image_name: str, img, request: request.Request) -> tuple[Thumbnail, str]:
+    """
+    Create a 200x200 thumbnail image from the original image.
+
+    This function creates a thumbnail image with dimensions 200x200 pixels from the original image.
+
+    Args:
+        image_name (str): The name of the original image.
+        img: The original image to create the thumbnail from.
+        request: The HTTP request object.
+
+    Returns:
+        Tuple[Thumbnail, str]: A tuple containing the created Thumbnail object and the link to the 200x200 thumbnail.
+
+    """
     img = ImageOps.exif_transpose(img.convert('RGB'))
     img.thumbnail((img.width, 200))
     thumbnail_stream = BytesIO()
@@ -76,6 +119,18 @@ def create_img_200(image_name, img, request):
     return thumbnail, thumbnail_link
 
 
-def generate_random_token(length=32):
+def generate_random_token(length: int = 32) -> str:
+    """
+    Generate a random token of the specified length.
+
+    This function generates a random token consisting of letters (both uppercase and lowercase) and digits.
+
+    Args:
+        length (int): The length of the token to be generated. Default is 32.
+
+    Returns:
+        str: A randomly generated token.
+
+    """
     characters = string.ascii_letters + string.digits
     return ''.join(random.choice(characters) for _ in range(length))

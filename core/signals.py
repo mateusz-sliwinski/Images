@@ -6,9 +6,21 @@ from django.dispatch import receiver
 
 @receiver(post_migrate)
 def create_tiers_and_superuser(sender, **kwargs):
+    """
+    Signal handler to create default tiers and a superuser after migrations.
+
+    This function is a signal handler for the 'post_migrate' signal. It creates default membership tiers
+    ('Basic', 'Premium', 'Enterprise') and a superuser ('admin') if they do not already exist in the database.
+
+    Args:
+        sender: The sender of the signal.
+        kwargs: Additional keyword arguments.
+
+    """
     User = apps.get_model('core', 'User')
     Tier = apps.get_model('core', 'Tier')
 
+    # Create a superuser if no users exist
     if not User.objects.all():
         superuser = User.objects.create_superuser(
             username='admin',
@@ -16,6 +28,7 @@ def create_tiers_and_superuser(sender, **kwargs):
             password='admin')
         superuser.save()
 
+    # Create default tiers if they don't exist
     if not Tier.objects.all():
         tier_basic = Tier.objects.create(
             name='Basic',
