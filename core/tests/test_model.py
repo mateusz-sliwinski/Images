@@ -1,11 +1,21 @@
+# Standard Library
 import io
 import uuid
+
+# Django
 from django.contrib.auth import get_user_model
-from django.core.files.uploadedfile import SimpleUploadedFile, InMemoryUploadedFile
+from django.core.exceptions import ValidationError
+from django.core.files.uploadedfile import InMemoryUploadedFile
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from django.utils import timezone
-from core.models import Tier, Thumbnail, ExpiredLink, Images
-from django.core.exceptions import ValidationError
+
+# Project
+from core.models import ExpiredLink
+from core.models import Images
+from core.models import Thumbnail
+from core.models import Tier
+
 User = get_user_model()
 
 

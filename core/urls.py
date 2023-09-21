@@ -3,8 +3,8 @@ from django.urls import path
 
 # Project
 from core.views import ListImagesView
-from core.views import UploadImageView
 from core.views import TokenView
+from core.views import UploadImageView
 
 urlpatterns = [
     path('upload_image/', UploadImageView.as_view(), name='upload_image'),
