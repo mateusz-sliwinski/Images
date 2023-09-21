@@ -1,7 +1,12 @@
 # Django
 from django.contrib import admin
 
-from core.models import User, Tier, Images, Thumbnail
+# Project
+from core.models import ExpiredLink
+from core.models import Images
+from core.models import Thumbnail
+from core.models import Tier
+from core.models import User
 
 
 # Register your models here.
@@ -54,4 +59,9 @@ class ImagesAdmin(admin.ModelAdmin):
 
 @admin.register(Thumbnail)
 class ThumbAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(ExpiredLink)
+class ExpiredAdmin(admin.ModelAdmin):
     pass
