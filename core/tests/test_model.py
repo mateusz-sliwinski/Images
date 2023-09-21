@@ -1,11 +1,9 @@
 # Standard Library
-import io
 import uuid
 
 # Django
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
-from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from django.utils import timezone
@@ -86,7 +84,6 @@ class TierModelTests(TestCase):
 
 class ThumbnailModelTests(TestCase):
     def setUp(self):
-        # Przygotuj przykładowe obrazy
         self.thumbnail_200 = SimpleUploadedFile(
             "thumbnail_200.jpg", b"file_content", content_type="image/jpeg"
         )
@@ -145,13 +142,11 @@ class ExpiredLinkModelTests(TestCase):
         self.assertEqual(ExpiredLink._meta.verbose_name_plural, 'Expired Links')
 
 
-
 class ImagesModelTests(TestCase):
     def setUp(self):
         self.user = User.objects.create(username='testuser')
         self.thumbnail = Thumbnail.objects.create()
         self.expired_link = ExpiredLink.objects.create()
-        # Tworzymy symulowany plik dla testu
         image_content = b"file_content"
         self.test_image = SimpleUploadedFile(
             "test_image.jpg", image_content, content_type="image/jpeg"
@@ -167,7 +162,6 @@ class ImagesModelTests(TestCase):
         )
         image_obj.save()
 
-        # Sprawdzamy, czy obraz został poprawnie utworzony
         saved_image = Images.objects.get(id=image_obj.id)
         self.assertIsInstance(saved_image, Images)
         self.assertEqual(saved_image.owner, self.user)
@@ -181,7 +175,7 @@ class ImagesModelTests(TestCase):
                 "test_image.jpg", b"file_content", content_type="image/jpeg"
             )
             image = Images(image=image_file, thumbnail=self.thumbnail, expired_time=3600)
-            image.full_clean()  # This should raise a ValidationError
+            image.full_clean()
 
     def test_str_representation(self):
         image = Images.objects.create(

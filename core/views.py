@@ -14,6 +14,7 @@ from PIL import ImageOps
 from rest_framework import status
 from rest_framework.parsers import FormParser
 from rest_framework.parsers import MultiPartParser
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -114,6 +115,8 @@ class UploadImageView(APIView):
 
 
 class ListImagesView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, request):
         user = request.user
 

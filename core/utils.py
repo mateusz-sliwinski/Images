@@ -22,7 +22,7 @@ def validation_photo_views(user, image_data, request):
             status=status.HTTP_400_BAD_REQUEST
         )
 
-    if 'image' not in request.data:
+    if image_data is None and 'image' not in request.FILES:
         return Response(
             {"error": "Image data not provided."},
             status=status.HTTP_400_BAD_REQUEST
