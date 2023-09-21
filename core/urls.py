@@ -1,11 +1,14 @@
 # Django
 from django.urls import path
 
-from core.views import UploadImageView, ListImagesView
 # Project
-from project import settings
+from core.views import ListImagesView
+from core.views import UploadImageView
+from core.views import TokenView
 
 urlpatterns = [
     path('upload_image/', UploadImageView.as_view(), name='upload_image'),
     path('list_images/', ListImagesView.as_view(), name='list_images'),
+    path('token/<str:token>/', TokenView.as_view(), name='token_view'),
+
 ]
