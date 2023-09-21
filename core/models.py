@@ -14,25 +14,17 @@ from PIL import Image
 
 class UUIDMixin(models.Model):
     """
-    A mixin providing a UUID-based primary key for Django models.
+    A mixin for adding a UUID (Universally Unique Identifier) field as the primary key to a Django model.
+
+    This mixin provides a UUID field named 'id' as the primary key for the model, ensuring each record
+    has a unique identifier. The 'id' field is automatically generated using the uuid4 function from the
+    uuid module.
 
     Attributes:
-        id (UUID): The UUID-based primary key of the model.
+        id (uuid.UUID): The UUID field serving as the primary key.
 
     Meta:
-        abstract (bool): Specifies that this is an abstract model and should not be created as a database table.
-
-    Fields:
-        id (UUIDField): A UUIDField representing the primary key of the model.
-
-    Usage:
-        To use this mixin, inherit from it in your Django model class.
-
-        Example:
-            class YourModel(UUIDMixin):
-                name = models.CharField(max_length=100)
-
-            This will add a UUID-based primary key to YourModel.
+        abstract (bool): Indicates that this model is abstract and should not be created as a separate database table.
     """
     id = models.UUIDField(
         default=uuid.uuid4,
@@ -48,32 +40,29 @@ class UUIDMixin(models.Model):
 
 class Tier(UUIDMixin, models.Model):
     """
-    Model representing a tier with a UUID-based primary key.
+    Represents a membership tier with specific features and settings.
+
+    Each tier can have a unique name and specific features, such as the availability of thumbnails,
+    original photos, and expiring links.
 
     Attributes:
-        id (UUID): The UUID-based primary key of the tier.
-        name (str): The name of the tier.
-        thumbnail_400px (bool): Indicates if the tier has a 400px thumbnail.
-        original_photo (bool): Indicates if the tier has an original photo.
-        expiring_link (bool): Indicates if the tier has an expiring link.
+        id (uuid.UUID): The UUID serving as the primary key.
+        name (str): The name of the membership tier.
+        thumbnails (bool): True if thumbnails are available for this tier, False otherwise.
+        original_photo (bool): True if original photos are available for this tier, False otherwise.
+        expiring_link (bool): True if expiring links are available for this tier, False otherwise.
 
     Meta:
-        verbose_name (str): The human-readable name for the model in the Django admin.
-        verbose_name_plural (str): The plural name for the model in the Django admin.
+        verbose_name (str): The singular display name for this model in the Django admin interface.
+        verbose_name_plural (str): The plural display name for this model in the Django admin interface.
 
     Methods:
-        __str__(): Returns a string representation of the tier.
+        __str__: Returns the name of the tier as its string representation.
 
-    Usage:
-        To use this model, inherit from it in your Django app.
+    Inherits:
+        UUIDMixin: A mixin providing a UUID field as the primary key.
 
-        Example:
-            class YourModel(Tier):
-                additional_field = models.CharField(max_length=50)
-
-            This will create a model with a UUID-based primary key and additional fields.
     """
-
     name = models.CharField(max_length=255)
     thumbnails = models.BooleanField(default=False)
     original_photo = models.BooleanField(default=False)
@@ -84,32 +73,36 @@ class Tier(UUIDMixin, models.Model):
         verbose_name_plural = 'Tiers'
 
     def __str__(self) -> str:
+        """
+        Return the name of the membership tier as its string representation.
+
+        Returns:
+            str: The name of the membership tier.
+        """
         return f'{self.name}'
 
 
 class User(AbstractUser):
     """
-    Custom User model with a UUID-based primary key and tier association.
+    Represents a user in the system.
+
+    This class extends the Django AbstractUser class and includes additional fields such as a UUID-based
+    primary key and a foreign key to represent the user's membership tier.
 
     Attributes:
-        id (UUID): The UUID-based primary key of the user.
-        tier (ForeignKey): The tier associated with the user.
+        id (uuid.UUID): The UUID serving as the primary key for the user.
+        tier (Tier): The membership tier associated with the user (if any).
 
     Meta:
-        verbose_name (str): The human-readable name for the model in the Django admin.
-        verbose_name_plural (str): The plural name for the model in the Django admin.
+        verbose_name (str): The singular display name for this model in the Django admin interface.
+        verbose_name_plural (str): The plural display name for this model in the Django admin interface.
 
     Methods:
-        __str__(): Returns a string representation of the user.
+        __str__: Returns a string representation of the user, including the username and associated tier.
 
-    Usage:
-        To use this model, inherit from it in your Django app and customize as needed.
+    Inherits:
+        AbstractUser: Django's built-in abstract base class for user management.
 
-        Example:
-            class YourUserModel(User):
-                additional_field = models.CharField(max_length=50)
-
-            This will create a custom user model with a UUID-based primary key and additional fields.
     """
     id = models.UUIDField(
         default=uuid.uuid4,
@@ -125,10 +118,34 @@ class User(AbstractUser):
         verbose_name_plural = 'Users'
 
     def __str__(self) -> str:
+        """
+        Return a string representation of the user, including the username and associated tier.
+
+        Returns:
+            str: A string representing the user, in the format '<username> <tier>'.
+        """
         return f'{self.username} {self.tier} '
 
 
 class Thumbnail(UUIDMixin, models.Model):
+    """
+    Represents thumbnail images with specific dimensions.
+
+    This class defines fields to store thumbnail images with dimensions of 200x200 and 400x400 pixels.
+
+    Attributes:
+        id (uuid.UUID): The UUID serving as the primary key for the thumbnail.
+        thumbnail_200 (django.db.models.fields.files.ImageField): The thumbnail image with dimensions 200x200 pixels.
+        thumbnail_400 (django.db.models.fields.files.ImageField): The thumbnail image with dimensions 400x400 pixels (nullable).
+
+    Meta:
+        verbose_name (str): The singular display name for this model in the Django admin interface.
+        verbose_name_plural (str): The plural display name for this model in the Django admin interface.
+
+    Inherits:
+        UUIDMixin: A mixin providing a UUID field as the primary key.
+
+    """
     thumbnail_200 = models.ImageField(upload_to='thumbnail_200')
     thumbnail_400 = models.ImageField(upload_to='thumbnail_400', null=True)
 
@@ -138,6 +155,27 @@ class Thumbnail(UUIDMixin, models.Model):
 
 
 class ExpiredLink(UUIDMixin, models.Model):
+    """
+    Represents an expired link with a token and expiration time.
+
+    This class stores information about an expired link, including a token and the time when the link expired.
+
+    Attributes:
+        id (uuid.UUID): The UUID serving as the primary key for the expired link.
+        token (str): The token associated with the expired link.
+        expiration_time (datetime.datetime): The date and time when the link expired.
+
+    Meta:
+        verbose_name (str): The singular display name for this model in the Django admin interface.
+        verbose_name_plural (str): The plural display name for this model in the Django admin interface.
+
+    Methods:
+        __str__: Returns a string representation of the expiration time of the link.
+
+    Inherits:
+        UUIDMixin: A mixin providing a UUID field as the primary key.
+
+    """
     token = models.CharField(max_length=255, null=True)
     expiration_time = models.DateTimeField(null=True)
 
@@ -146,37 +184,42 @@ class ExpiredLink(UUIDMixin, models.Model):
         verbose_name_plural = 'Expired Links'
 
     def __str__(self) -> str:
+        """
+        Return a string representation of the expiration time of the link.
+
+        Returns:
+              str: A string representing the expiration time of the link.
+        """
         return f'{self.expiration_time}'
 
 
 class Images(UUIDMixin, models.Model):
     """
-    Model representing an image with a UUID-based primary key.
+    Represents an image uploaded by a user, with associated details.
+
+    This class stores information about an uploaded image, including the image file, the owner (a user),
+    a thumbnail associated with the image, an expired link (if any), and the expired time for the link.
 
     Attributes:
-        id (UUID): The UUID-based primary key of the image.
-        image (ImageField): The image file.
-        owner (ForeignKey): The user who owns the image.
-        expired_time (int): The expiration time for the image in seconds.
+        id (uuid.UUID): The UUID serving as the primary key for the image.
+        image (django.db.models.fields.files.ImageField): The uploaded image file (nullable).
+        owner (User): The user who uploaded the image.
+        thumbnail (Thumbnail): The associated thumbnail for the image (nullable).
+        expired_link (ExpiredLink): The associated expired link for the image (nullable).
+        expired_time (int): The expiration time for the link in seconds (nullable).
 
     Meta:
-        verbose_name (str): The human-readable name for the model in the Django admin.
-        verbose_name_plural (str): The plural name for the model in the Django admin.
+        verbose_name (str): The singular display name for this model in the Django admin interface.
+        verbose_name_plural (str): The plural display name for this model in the Django admin interface.
 
     Methods:
-        save(): Overrides the default save method to perform additional checks.
-        __str__(): Returns a string representation of the image.
+        save: Overrides the save method to validate the image format before saving.
+        __str__: Returns a string representation of the image, including the owner's username and expiration time.
 
-    Usage:
-        To use this model, inherit from it in your Django app.
+    Inherits:
+        UUIDMixin: A mixin providing a UUID field as the primary key.
 
-        Example:
-            class YourImageModel(Images):
-                additional_field = models.CharField(max_length=50)
-
-            This will create a model with a UUID-based primary key and additional fields.
     """
-
     image = models.ImageField(null=True, blank=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
     thumbnail = models.ForeignKey(Thumbnail, on_delete=models.CASCADE, null=True)
@@ -194,6 +237,13 @@ class Images(UUIDMixin, models.Model):
         verbose_name_plural = 'Images'
 
     def save(self, *args, **kwargs):
+        """
+                Overrides the save method to validate the image format before saving.
+
+                Raises:
+                    ValidationError: If the image format is not 'jpeg' or 'png'.
+
+                """
         if self.image:
             try:
                 img = Image.open(self.image.path)
@@ -205,4 +255,10 @@ class Images(UUIDMixin, models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self) -> str:
+        """
+        Return a string representation of the image, including the owner's username and expiration time.
+
+        Returns:
+            str: A string representing the image in the format '<username> <expiration_time>'.
+        """
         return f'{self.owner.username} {self.expired_time}'
