@@ -20,7 +20,9 @@ class ImageSerializer(serializers.ModelSerializer):
             self.fields.pop('expired_time')
             self.fields.pop('thumbnail')
             self.fields.pop('owner')
+            self.fields.pop('expired_link')
 
         if is_enterprise:
             self.fields.pop('owner')
             self.fields.pop('thumbnail')
+            self.fields.pop('expired_link')
