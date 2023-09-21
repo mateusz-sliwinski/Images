@@ -146,7 +146,7 @@ class ExpiredLink(UUIDMixin, models.Model):
         verbose_name_plural = 'Expired Links'
 
     def __str__(self) -> str:
-        return f'{self.expiration_time} '
+        return f'{self.expiration_time}'
 
 
 class Images(UUIDMixin, models.Model):
@@ -195,11 +195,14 @@ class Images(UUIDMixin, models.Model):
 
     def save(self, *args, **kwargs):
         if self.image:
-            img = Image.open(self.image.path)
-            img_format = img.format.lower() if img.format else None
-            if img_format not in ['jpeg', 'jpg', 'png']:
-                raise ValidationError("Use jpg or png format.")
+            try:
+                img = Image.open(self.image.path)
+                img_format = img.format.lower() if img.format else None
+                if img_format not in ['jpeg', 'jpg', 'png']:
+                    raise ValidationError("Use jpg or png format.")
+            except FileNotFoundError:
+                pass
         super().save(*args, **kwargs)
 
     def __str__(self) -> str:
-        return f'{self.owner.username} {self.expired_time} '
+        return f'{self.owner.username} {self.expired_time}'
