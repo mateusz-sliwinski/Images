@@ -22,6 +22,7 @@ This project encompasses an API developed using Django REST Framework (DRF), tai
 - **Browsable API**: The project utilizes DRF's browsable API, avoiding the need for a custom user UI.
 
 ### Using Docker
+remember to create the file settings_local.py in the project folder and configure your database example you have in settings_local.example
 
 1. Install [Docker](https://www.docker.com/) and [docker-compose](https://docs.docker.com/compose/).
 2. Run `docker-compose up --build` to start the services.
