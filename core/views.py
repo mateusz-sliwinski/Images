@@ -119,6 +119,7 @@ class UploadImageView(APIView):
                 thumbnail, thumbnail_link_200, thumbnail_link_400 = create_img_200_400(image_name, img, request)
 
             expired_link = ExpiredLink.objects.create(token=generate_random_token(), expiration_time=expiration_time)
+            image.expired_time = expired_time
             image.image.save(image_name, image_data)
             image.thumbnail = thumbnail
             image.expired_link = expired_link

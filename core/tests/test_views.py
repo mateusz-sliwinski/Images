@@ -1,5 +1,6 @@
 # Standard Library
-from datetime import datetime, timedelta
+from datetime import datetime
+from datetime import timedelta
 
 # Django
 from django.contrib.auth import get_user_model

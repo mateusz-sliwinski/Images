@@ -1,4 +1,3 @@
-
 # Standard Library
 from unittest import TestCase
 

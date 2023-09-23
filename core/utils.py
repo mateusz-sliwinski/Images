@@ -5,9 +5,10 @@ from io import BytesIO
 
 # Django
 from django.core.files.base import ContentFile
-from rest_framework import request
+
 # 3rd-party
 from PIL import ImageOps
+from rest_framework import request
 from rest_framework import status
 from rest_framework.response import Response
 

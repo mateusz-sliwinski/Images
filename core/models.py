@@ -190,7 +190,7 @@ class ExpiredLink(UUIDMixin, models.Model):
         Returns:
               str: A string representing the expiration time of the link.
         """
-        return f'{self.expiration_time}'
+        return f'{self.expiration_time.strftime("%Y-%m-%d %H:%M:%S")}'
 
 
 class Images(UUIDMixin, models.Model):
