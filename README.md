@@ -35,8 +35,9 @@ if you want to have css and static when you start docker you have to do
 ### Manual Setup
 
 1. Configure and activate the virtual environment I recommend using python at least 3.10 .
-2. Install the required packages using `pip install -r requirements_dev.txt`.
-3. Run migrations using `python manage.py migrate`.
+2. create a settings_local.py file in your project folder and configure your database the example you have in settings_local.example
+3. Install the required packages using `pip install -r requirements_dev.txt`.
+4. Run migrations using `python manage.py migrate`.
 5. Start the Django development server using `python manage.py runserver`.
 6. The API will be available at `http://127.0.0.1:8000`.
 
